@@ -15,6 +15,8 @@ export const forbiddenHandler = (err, req, res, next) => {
 }
 
 export const catchAllHandler = (err, req, res, next) => {
+  console.log(err.message)
+  
   res.status(500).send("Generic Server Error!")
 }
 

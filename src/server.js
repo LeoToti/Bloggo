@@ -1,6 +1,8 @@
 import express from 'express'
 import mongoose from 'mongoose'
 import listEndpoints from 'express-list-endpoints'
+import passport from 'passport'
+import oauth from './auth/oauth.js'
 
 import usersRoutes from './services/users/index.js'
 import authorsRouter from './services/authors/index.js'
@@ -13,6 +15,7 @@ const port = process.env.PORT || 3001
 // ******************* MIDDLEWARES *********************
 
 server.use(express.json())
+server.use(passport.initialize())
 
 // ******************** ROUTES ***********************
 

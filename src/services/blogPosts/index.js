@@ -10,10 +10,14 @@ import { generatePDFStream } from "../lib/pdf.js"
 import { pipeline } from "stream"
 import PostModel from "./schema.js"
 import q2m from "query-to-mongo"
+import UserModel from "../users/schema.js"
+import { JWTAuthMiddleware } from "../../auth/middlewares.js"
 
 const postsRouter = express.Router()
 
 postsRouter.get("/", async (req, res, next) => {
+  const user = await UserModel.checkCredentials(email, password)
+  if (user){
   try {
     const query = q2m(req.query)
     console.log(query)
@@ -27,11 +31,12 @@ postsRouter.get("/", async (req, res, next) => {
   } catch (error) {
     console.log(error)
     next(createError(500, "An error occurred while getting post"))
-  }
+  }}
 })
 
-postsRouter.post("/", async (req, res, next) => {
+postsRouter.post("/", JWTAuthMiddleware, async (req, res, next) => {
   try {
+    //req.user ora c'e' l'utente che sta facedo la chiamata (grazie al middlewoare)
     const newPost = new PostModel(req.body)
     const response = await newPost.save()
     res.status(201).send(response._id)
@@ -344,5 +349,14 @@ postsRouter.post("/:id/like", async (req, res, next) => {
 //     next(error)
 //   }
 // })
+
+postsRouter.get("/me", JWTAuthMiddleware, async (req,res,next) => {
+  // Richiesta di tutti i post dell'utente dentro req.user
+
+  // id dell'utente che sta chiamando => req.user._id
+
+
+
+})
 
 export default postsRouter
